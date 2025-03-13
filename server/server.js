@@ -13,18 +13,12 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://tasks-assignment-1.onrender.com",
-];
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://tasks-assignment-1.onrender.com",
+// ];
 
-app.use(
-  cors({
-    origin: allowedOrigins, // Allow requests only from these origins
-    credentials: true, // If using cookies or authorization headers
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-  })
-);
+app.use(cors());
 
 // Convert ES module paths
 const __filename = fileURLToPath(import.meta.url);
