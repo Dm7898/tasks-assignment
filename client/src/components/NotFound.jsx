@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import notFoundImage from "/notfound.svg";
-
+//Not found page
 function NotFound() {
   const navigate = useNavigate();
 

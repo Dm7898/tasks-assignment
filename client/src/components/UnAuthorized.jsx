@@ -1,6 +1,6 @@
 import unauthorised from "/unauthorised.svg";
 import { useNavigate } from "react-router-dom";
-
+//un authorized page
 function UnAuthorized() {
   const navigate = useNavigate();
 

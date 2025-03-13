@@ -3,9 +3,12 @@ import { TaskContext } from "../context/TaskContext";
 import UploadCSV from "./UploadCSV";
 
 const AgentTasks = () => {
+  //from context api getting tasks,loading here
   const { tasks, loading } = useContext(TaskContext);
+  // while fetching data we can show
   if (loading)
     return <p className="flex items-center justify-center">Loading...</p>;
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 mt-6">
       <UploadCSV />

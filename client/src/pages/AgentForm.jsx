@@ -19,7 +19,7 @@ const AgentForm = () => {
     email: "",
     mobile: "",
   });
-
+  //fecth agents onload
   useEffect(() => {
     fetchAgents();
   }, []);
@@ -32,14 +32,14 @@ const AgentForm = () => {
       console.error("Error fetching agents:", error);
     }
   };
-
+  //validate email
   const validateEmail = (email) => {
     console.log(email);
     const emailRegex =
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org|edu|gov|mil|biz|info|io|co|us|in|uk)$/i;
     return emailRegex.test(email);
   };
-
+  //va;idate mobile number
   const validateMobile = (mobile) => {
     const cleanedMobile = mobile.replace(/\D/g, "");
     if (cleanedMobile.startsWith("91") && cleanedMobile.length === 12) {
@@ -69,7 +69,7 @@ const AgentForm = () => {
 
     setErrors(newErrors);
     if (!valid) return;
-
+    // post data to backend
     try {
       await api.post("/agents/add", newAgent);
       toast.success("Agent added successfully");
@@ -81,7 +81,7 @@ const AgentForm = () => {
       toast.error(error.response?.data?.error || "Something went wrong!");
     }
   };
-
+  //pageniation
   const indexOfLastAgent = currentPage * agentsPerPage;
   const indexOfFirstAgent = indexOfLastAgent - agentsPerPage;
   //   const currentAgents = agents.slice(indexOfFirstAgent, indexOfLastAgent);
@@ -136,6 +136,7 @@ const AgentForm = () => {
             }`}
             required
           />
+          {/* shows error  */}
           {errors.email && (
             <p className="text-red-500 text-sm mb-2">{errors.email}</p>
           )}
@@ -177,7 +178,7 @@ const AgentForm = () => {
             Submit
           </button>
         </form>
-
+        {/* agents list */}
         <div>
           <h3 className="text-xl font-bold text-gray-800 text-center md:text-left">
             Agents List
@@ -203,6 +204,7 @@ const AgentForm = () => {
               </li>
             ))}
           </ul>
+          {/* pageniation */}
           {agents.length > 0 && (
             <div className="flex justify-center gap-2 mt-3">
               <button

@@ -15,7 +15,7 @@ const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
-
+//store file
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -109,7 +109,7 @@ export const createTasks = async (req, res) => {
     res.status(500).json({ message: "Error processing file", error });
   }
 };
-
+//get all tasks
 export const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find().populate("assignedTo", "name email");

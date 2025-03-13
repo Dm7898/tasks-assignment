@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-
+// optional i added
 const Register = () => {
   const [formData, setFormData] = useState({
     username: "",

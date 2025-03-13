@@ -7,7 +7,7 @@ import {
 } from "../controllers/taskController.js";
 
 const router = express.Router();
-
+//task routes
 router.post("/upload", upload.single("file"), createTasks);
 router.get("/assigned-tasks", getAllTasks);
 

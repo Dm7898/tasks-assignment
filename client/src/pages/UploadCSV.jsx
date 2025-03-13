@@ -8,17 +8,19 @@ const UploadCSV = () => {
   const { fetchTasks } = useContext(TaskContext);
   const [loading, setLoading] = useState(false);
 
+  //file checks
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     if (file) {
       handleUpload(file);
     }
   };
-
+  //button triggers input file
   const triggerFileSelect = () => {
     fileInputRef.current.click();
   };
-
+  //send data to backend
   const handleUpload = async (file) => {
     setLoading(true);
     const formData = new FormData();

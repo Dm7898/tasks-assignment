@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+//agent schema
 const agentSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },

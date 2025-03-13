@@ -8,8 +8,11 @@ import { TaskProvider } from "./context/TaskContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    {/* Task Provider */}
     <TaskProvider>
+      {/* Router */}
       <Router>
+        {/* notifiactions messages */}
         <Toaster richColors position="top-center" />
         <App />
       </Router>

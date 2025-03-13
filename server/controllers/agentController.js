@@ -39,7 +39,7 @@ export const createAgent = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+//get all agents
 export const getAllAgents = async (req, res) => {
   try {
     const agents = await Agent.find();
