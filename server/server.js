@@ -11,14 +11,25 @@ import taskRoutes from "./routes/taskRoutes.js";
 dotenv.config();
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://tasks-assignment-1.onrender.com",
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
-
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "https://tasks-assignment-1.onrender.com",
-// ];
-
-app.use(cors());
 
 // Convert ES module paths
 const __filename = fileURLToPath(import.meta.url);
