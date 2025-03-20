@@ -42,13 +42,16 @@ export const login = async (req, res) => {
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET_KEY || "jwt_secret_key_mydmjwt",
       {
-        expiresIn: "1h",
+        expiresIn: "10h",
       }
     );
 
-    res
-      .status(200)
-      .json({ message: "Login successful", token, userRole: user.role });
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      userId: user._id,
+      userRole: user.role,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error });
   }

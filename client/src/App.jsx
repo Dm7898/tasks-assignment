@@ -5,12 +5,22 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UnAuthorized from "./components/UnAuthorized";
 import NotFound from "./components/NotFound";
+// import AuthGuard from "./components/AuthGuard";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login />} />
+
+      <Route
+        path="/login"
+        element={
+          // <AuthGuard>
+          <Login />
+          // </AuthGuard>
+        }
+      />
+
       {/* <Route path="/register" element={<Register />} /> */}
       <Route path="/not-authorized" element={<UnAuthorized />} />
       <Route path="*" element={<NotFound />} />

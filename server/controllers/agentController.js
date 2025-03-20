@@ -2,8 +2,8 @@ import Agent from "../models/Agent.js";
 // import bcrypt from "bcryptjs";
 
 export const createAgent = async (req, res) => {
-  const { name, email, mobile, password } = req.body;
-
+  const { name, email, mobile, password, adminId } = req.body;
+  console.log(adminId);
   if (!name || !email || !mobile || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -15,6 +15,7 @@ export const createAgent = async (req, res) => {
       email,
       mobile,
       password,
+      adminId,
     });
 
     await newAgent.save();
@@ -42,7 +43,12 @@ export const createAgent = async (req, res) => {
 //get all agents
 export const getAllAgents = async (req, res) => {
   try {
-    const agents = await Agent.find();
+    const adminId = req.user?.id || req.query.adminId;
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
+    const agents = await Agent.find({ adminId });
+    // const agents = await Agent.find({ adminId: req.user.id });
     res.json(agents);
   } catch (error) {
     res.status(500).json({ message: "Error fetching agents" });

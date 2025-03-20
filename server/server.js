@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  "https://tasks-assignment-1.onrender.com",
+  // "https://tasks-assignment-1.onrender.com",
   "http://localhost:5173",
 ];
 

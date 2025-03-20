@@ -2,10 +2,12 @@ import { useContext, useRef, useState } from "react";
 import { toast } from "sonner";
 import { TaskContext } from "../context/TaskContext";
 import api from "../api/axiosInstance";
+import { AuthContext } from "../context/authContext";
 
 const UploadCSV = () => {
+  const { user } = useContext(AuthContext);
   const fileInputRef = useRef(null);
-  const { fetchTasks } = useContext(TaskContext);
+  const { fetchTasks, fetchAgentTaskCounts } = useContext(TaskContext);
   const [loading, setLoading] = useState(false);
 
   //file checks
@@ -25,6 +27,7 @@ const UploadCSV = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("adminId", user?.userId);
 
     try {
       await api.post("/tasks/upload", formData, {
@@ -34,6 +37,7 @@ const UploadCSV = () => {
 
       // Refresh tasks after successful upload
       fetchTasks();
+      fetchAgentTaskCounts();
     } catch (error) {
       toast.error(
         "csv, xlsx, xls files are allowed & duplicates tasks are not allowed!"
@@ -57,7 +61,7 @@ const UploadCSV = () => {
         <button
           onClick={triggerFileSelect}
           disabled={loading}
-          className="w-full bg-[#fc624d] text-[#ffffff] font-bold py-2 px-4 rounded-lg hover:bg-[#fc614de7] transition cursor-pointer"
+          className="w-full lightpink font-bold py-2 px-4 rounded-lg  transition cursor-pointer"
         >
           {loading ? "Uploading..." : "Upload File"}
         </button>

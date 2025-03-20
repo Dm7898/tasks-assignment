@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import api from "../api/axiosInstance";
+import { AuthContext } from "../context/authContext";
 
 const Login = () => {
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +32,7 @@ const Login = () => {
         email,
         password,
       });
-
+      login(res.data);
       localStorage.setItem("userRole", JSON.stringify(res.data.userRole));
       localStorage.setItem("token", res.data.token);
 
@@ -68,13 +70,13 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-[#fc624d] text-white font-bold py-3 rounded-lg shadow-md hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full lightpink font-bold py-3 rounded-lg shadow-md hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
           <p className="mt-3 text-center text-gray-600">
-            <Link to="#" className="text-[#fc624d] hover:underline">
+            <Link to="#" className="text-[#8d1cdd] hover:underline">
               Forgot Your Password?
             </Link>
           </p>

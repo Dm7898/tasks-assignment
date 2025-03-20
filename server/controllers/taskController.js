@@ -5,6 +5,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Task from "../models/Task.js";
 import Agent from "../models/Agent.js";
+import mongoose from "mongoose";
+import { count } from "console";
 
 // Convert ES module paths
 const __filename = fileURLToPath(import.meta.url);
@@ -42,6 +44,11 @@ export const upload = multer({
 
 export const createTasks = async (req, res) => {
   try {
+    const adminId = req.body.adminId;
+
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
@@ -53,7 +60,7 @@ export const createTasks = async (req, res) => {
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
+    // console.log(data);
     // Validate file structure
     if (!data.every((row) => row.firstname && row.phone && row.notes)) {
       fs.unlinkSync(filePath); // Remove invalid file
@@ -64,7 +71,7 @@ export const createTasks = async (req, res) => {
 
     // Get existing tasks from the database
     const existingTasks = await Task.find({}, "firstname phone notes");
-
+    console.log(existingTasks);
     // Check for duplicates
     const duplicateEntries = data.filter((newTask) =>
       existingTasks.some(
@@ -86,17 +93,18 @@ export const createTasks = async (req, res) => {
     }
 
     // If no duplicates, keep the file and proceed with task distribution
-    const agents = await Agent.find();
+    const agents = await Agent.find({ adminId });
     if (agents.length === 0) {
       fs.unlinkSync(filePath); // Remove file if no agents exist
       return res.status(400).json({ message: "No agents available" });
     }
+    // console.log(agents);
 
     let taskIndex = 0;
     const distributedTasks = data.map((task) => {
       const assignedAgent = agents[taskIndex % agents.length];
       taskIndex++;
-      return { ...task, assignedTo: assignedAgent._id };
+      return { ...task, assignedTo: assignedAgent._id, createdBy: adminId };
     });
 
     await Task.insertMany(distributedTasks);
@@ -106,15 +114,73 @@ export const createTasks = async (req, res) => {
       filePath,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error processing file", error });
+    res
+      .status(500)
+      .json({ message: "Error processing file", error: error.message });
   }
 };
 //get all tasks
 export const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().populate("assignedTo", "name email");
+    const { createdBy: adminId } = req.query;
+    // console.log(adminId);
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
+    const tasks = await Task.find({ createdBy: adminId }).populate(
+      "assignedTo",
+      "name email"
+    );
+    // console.log(tasks);
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: "Error fetching tasks" });
+  }
+};
+
+export const getAgentTaskCounts = async (req, res) => {
+  try {
+    const { id: adminId } = req.params;
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
+    // Aggregate tasks and count per agent
+    const taskCounts = await Task.aggregate([
+      {
+        $match: { createdBy: new mongoose.Types.ObjectId(adminId) },
+      },
+      {
+        $group: {
+          _id: "$assignedTo",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "agents",
+          localField: "_id",
+          foreignField: "_id",
+          as: "agentDetails",
+        },
+      },
+      { $unwind: { path: "$agentDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          agentId: "$_id",
+          agentName: "$agentDetails.name",
+          agentEmail: "$agentDetails.email",
+          agentMobile: "$agentDetails.mobile",
+          agentPassword: "$agentDetails.password",
+          count: 1,
+        },
+      },
+    ]);
+    // console.log(taskCounts, adminId);
+
+    res.json(taskCounts);
+  } catch (error) {
+    console.error("Error fetching task counts:", error);
+    res.status(500).json({ message: "Error fetching task counts" });
   }
 };

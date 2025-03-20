@@ -1,9 +1,17 @@
 import axios from "axios";
-// api no need write every axios.get etc..
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL?.trim() || "http://localhost:5000/api",
+  baseURL: "http://localhost:5000/api",
   withCredentials: true, // Ensure cookies/auth headers are included
 });
 
-console.log(import.meta.env.VITE_API_URL);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token"); // Always fetch the latest token
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+// console.log(localStorage.getItem("token"));
+// console.log(import.meta.env.VITE_API_URL);
 export default api;
